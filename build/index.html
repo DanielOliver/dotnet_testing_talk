@@ -1,0 +1,728 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>reveal.js</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/white.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+
+    <style>
+        .reveal h1 {
+            font-size: 3.0em;
+        }
+
+        .reveal h2 {
+            font-size: 2.4em;
+        }
+
+        .reveal h3 {
+            font-size: 1.7em;
+        }
+
+        .reveal h4 {
+            font-size: 1.6em;
+        }
+
+        .reveal p {
+            font-size: 1.4em;
+        }
+
+        .reveal pre code {
+            font-size: 1.3em;
+            line-height: 1.2;
+        }
+
+        .reveal pre {
+            width: 100%;
+        }
+    </style>
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section data-background="#F2F2F2">
+                <img data-src="assets/placeholderslide.jpg" height="1080" width="1920">
+            </section>
+
+
+            <!-- BEGIN INTRODUCTION -->
+
+            <section data-background="#F2F2F2">
+                <h3>An Introduction to Server</h3>
+                <h1>Configuration</h1>
+                <h3>and</h3>
+                <h1>Provisioning</h1>
+                <h2>with Ansible</h2>
+            </section>
+
+            <section data-background="#333333">
+                <h1>Daniel Oliver</h1>
+                <h2>olivercoding.com</h2>
+                <h3>Twitter: @a_software_dev</h3>
+                <h3>Github: danieloliver</h3>
+                <img style="background-color: rgba(255, 255, 255, 0); border:none; box-shadow: 0 0 0 rgba(0,0,0,0);" data-src="assets/Asset_7.png">
+                <aside class="notes">
+                    Radio Systems Corporation of Knoxville is my employer. I focus on solutions.
+                </aside>
+            </section>
+
+            <!-- BEGIN PROBLEM -->
+
+            <section data-background="#eAeAeA">
+                <h2>The problems</h2>
+                <ul>
+                    <li>
+                        <p>Server setup documentation is wrong.</p>
+                    </li>
+                    <li>
+                        <p>Environment configuration documentation is wrong.</p>
+                    </li>
+                    <li>
+                        <p>We have a million servers in each environment.</p>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Do you even have documentation?
+                    <br/> Do you even have Inventory?
+                    <br/> A million servers might be exaggeration.
+                    <br/> Anyway, let's go through what these things are.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Server setup documentation</h2>
+                <p>How to create the server from scratch including all installed programs, security settings, configuration,
+                    etc.
+                </p>
+                <div class="fragment fade-in">
+                    <br/>
+                    <p>
+                        <b>But then we ask, is every server matching this documentation?</b>
+                    </p>
+                    <img data-src="assets/noidea.gif" height="378" width="506">
+                </div>
+                <aside class="notes">
+                    Whoever set up the server, did the bare minimum to get stuff working without a real plan.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Environment configuration documentation</h2>
+                <p>How the server should be setup for each environment: development, test, user-acceptance-testing, production,
+                    etc.
+                </p>
+                <div class="fragment fade-in">
+                    <br/>
+                    <p>
+                        <b>But then we ask, is every environment matching this documentation?</b>
+                    </p>
+                    <img data-src="assets/noidea2.gif" height="394" width="700">
+                </div>
+                <aside class="notes">
+                    Transferring changes made in each environment is not always part of the visible plan.
+                </aside>
+            </section>
+
+            <section>
+                <h2>A lot of Servers</h2>
+                <p>Each environment has a lot of servers to setup and maintain.</p>
+                <div class="fragment fade-in">
+                    <br/>
+                    <p>
+                        <b>But then we ask, how do we setup each of the servers?</b>
+                    </p>
+                    <img data-src="assets/brokenmonkey.gif" height="312" width="500">
+                </div>
+                <aside class="notes">
+                    We have trained monkeys to go through 500 installation programs.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Tribal Knowledge</h2>
+                <p>Tribal knowledge is any unwritten knowledge and is passed on by word of mouth &AMP; experience.</p>
+                <br/>
+                <p>This could be a problem if you lose your vital employees.</p>
+                <aside class="notes">
+                    Tribal knowledge is what happens if documentation is wrong, or missing.
+                    <br/> Tribal knowledge isn't necessarily a bad thing, and could represent a very experienced team.
+                    <br/>How do we solve the problem of making changes in a consistent and documented way?
+                </aside>
+            </section>
+
+            <!-- BEGIN INFRASTRUCTURE AS CODE -->
+
+            <section data-background="#eAeAeA">
+                <h1>Infrastructure AS Code</h1>
+                <p>
+                    <b>A new phrase, for old stuff.</b>
+                </p>
+                <aside class="notes">
+                    This may seem crazy, but consider that we can script database changes. That's effectively Infrastructure As Code.
+                    <br/> Software Developers break things. The Operations team values stability. There's a reason Operations
+                    team doesn't want Software Developers in servers.
+                    <br/> Infrastructure as Code isn't actually new.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Benefits of Infrastructure as Code</h3>
+                <ul>
+                    <li>
+                        <p>Automation. We know how to automate deployments</p>
+                    </li>
+                    <li>
+                        <p>Quality. We can code review infrastructure changes.</p>
+                    </li>
+                    <li>
+                        <p>Documentation as Code.</p>
+                    </li>
+                    <li>
+                        <p>Source control all code in Git/TFS/Mercurial.</p>
+                    </li>
+                    <li>
+                        <p>Great for audits and compliance restrictions.</p>
+                    </li>
+                    <li>
+                        <p>DevOps is cool.</p>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    I don't have a slide for the downsides. The most I could say is that it's another thing to learn.
+                </aside>
+            </section>
+
+            <!-- BEGIN Ansible -->
+
+            <section data-background="#eAeAeA">
+                <h1>Ansible</h1>
+                <p>
+                    <b>For when we don't want 5000 line shell scripts.</b>
+                </p>
+                <img data-src="assets/unixsystem.gif" height="411" width="750">
+                <aside class="notes">
+                    There are many great tools. You have to figure out what works best for you. "Chef, Puppet, Salt"
+                    <br/> Ansible is from Redhat, who support RedHat Linux.
+                </aside>
+            </section>
+
+            <section>
+                <h3>It's demo time!</h3>
+                <br/>
+                <p> Actually, everything is pre-recorded for my sanity with the following 3 VMs</p>
+                <pre class="powershell">
+                    <code style="max-height:100%" data-trim data-noescape>PS C:\Users\Daniel> az network public-ip list --query '[].{IPAddress: ipAddress, FQDN: dnsSettings.fqdn, Name: name}' --output table
+IPAddress      FQDN                                  Name
+-------------  ------------------------------------  ------------------
+13.90.245.94   ansiblevm1.eastus.cloudapp.azure.com  ansiblevm1PublicIP
+52.168.111.32  ansiblevm2.eastus.cloudapp.azure.com  ansiblevm2PublicIP
+13.90.251.252  ansiblevm3.eastus.cloudapp.azure.com  ansiblevm3PublicIP
+PS C:\Users\Daniel></code>
+                </pre>
+                <p>
+                    <i>Note: these VMs shouldn't be publicly accessible.</i>
+                </p>
+                <aside class="notes">
+                    Three VMs is a good sample size.
+                    <br/> These VMs have been deleted, so it's probably fine.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Ad-Hoc Command</h3>
+                <p>ansible all -m ping</p>
+                <pre class="bash">
+                        <code style="max-height:100%" data-trim data-noescape>$ ansible all -m ping
+ansiblevm1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+ansiblevm2 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+ansiblevm3 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}</code>
+                </pre>
+                <p>Ansible provides wrappers to common functionality in the form of modules.</p>
+                <aside class="notes">
+                    Ansible also supports ad-hoc commands for management of servers. Because sometimes you got to.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Ad-Hoc Command Explained - Part 1.</h3>
+                <p>Ansible configuration includes an "inventory" of the servers.</p>
+                <pre class="ini">
+                    <code data-trim data-noescape>ansiblevm1   ansible_ssh_user=daniel   ansible_host=ansiblevm1.eastus.cloudapp.azure.com
+ansiblevm2   ansible_ssh_user=daniel   ansible_host=ansiblevm2.eastus.cloudapp.azure.com
+ansiblevm3   ansible_ssh_user=daniel   ansible_host=ansiblevm3.eastus.cloudapp.azure.com</code>
+                </pre>
+                <p>Inventories can be dynamic too.</p>
+                <aside class="notes">
+                    For demo purposes, this is a static inventory. And honestly, static inventories usually suffice.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Ad-Hoc Command Explained - Part 2.</h3>
+                <p>Ansible connects using SSH, SCP, and SFTP.</p>
+                <p>An example from "ansible all -m ping" looks like this.</p>
+                <pre class="bash">
+                        <code data-trim data-noescape>ssh -i /mnt/c/Users/Daniel/.ssh/id_rsa -o StrictHostKeyChecking=no -o KbdInteractiveAuthentication=no \
+    -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no \
+    -o User=daniel -o ConnectTimeout=10 ansiblevm3.eastus.cloudapp.azure.com '/bin/sh -c '"'"'echo ~ &AMP;&AMP; sleep 0'"'"''</code>
+                </pre>
+
+                <p>Simplified</p>
+                <pre class="bash">
+                    <code data-trim data-noescape>ssh -i /mnt/c/Users/Daniel/.ssh/id_rsa daniel@ansiblevm1.eastus.cloudapp.azure.com</code>
+                </pre>
+                <aside class="notes">
+                    All Ansible needs is Python installed, and access.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Ad-Hoc Command Explained - Part 3.</h3>
+                <p>Ansible configuration is simple to start with.</p>
+                <pre class="ini">
+                        <code data-trim data-noescape>[ssh_connection]
+ssh_args = -i "/mnt/c/Users/Daniel/.ssh/id_rsa"
+
+[defaults]
+inventory = hosts
+host_key_checking = False</code>
+                    </pre>
+                <p>
+                    <i>Note: "host_key_checking = False" may not be a great idea.</i>
+                </p>
+                <aside class="notes">
+                    Configuration is fairly simple.
+                    <br/> Now you've probably noticed something here. This is agentless and I'm running it on my computer.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Ad-Hoc Command Explained - Part 4.</h3>
+                <p>ansible all -m ping</p>
+                <ul>
+                    <li>"ansible" = command</li>
+                    <li>"all" = servers in inventory to run command against</li>
+                    <li>"-m" = Ansible module flag</li>
+                    <li>"ping" = Ansible module</li>
+                </ul>
+                <pre class="bash">
+                            <code style="max-height:100%" data-trim data-noescape>ansiblevm1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}</code>
+                    </pre>
+                <p>When each command runs, it's going to tell you if it changed anything on the server.</p>
+                <aside class="notes">
+                    There are a lot of Ansible Modules.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Idempotent</h3>
+                <p>Infrastructure as Code declares the state we want to achieve.
+                    <br/> Idempotent actions allow us to run the code many times with no harm.</p>
+                <pre class="bash">
+                                <code style="max-height:100%" data-trim data-noescape>$ ansible all -s -m user -a "name=johndoe state=absent"
+ansiblevm1 | SUCCESS => {
+    "changed": true,
+    "force": false,
+    "name": "johndoe",
+    "remove": false,
+    "state": "absent",
+    "stderr": "sent invalidate(passwd) request, exiting\nsent invalidate(group) request, exiting\nsent invalidate(passwd) request, exiting\nsent invalidate(group) request, exiting\n",
+    "stderr_lines": [
+        "sent invalidate(passwd) request, exiting",
+        "sent invalidate(group) request, exiting",
+        "sent invalidate(passwd) request, exiting",
+        "sent invalidate(group) request, exiting"
+    ]
+}
+ansiblevm3 | SUCCESS => {
+    "changed": false,
+    "name": "johndoe",
+    "state": "absent"
+}
+...</code>
+                        </pre>
+                <aside class="notes">
+                    Idempotent actions declare the state we want the server to be at.
+                    <br/> In this case, we just want to remove the user John Doe.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Playbook</h3>
+                <p>Ansible can combine commands into a playbook.</p>
+                <pre class="yaml">
+                                    <code style="max-height:100%" data-trim data-noescape>---
+- hosts: all  # The servers from the inventory.
+  tasks: 
+    # Idempotent Task.
+    - name: Make sure that apt-get dotnet-sdk-2.1.4 is present.
+      apt:
+        name: dotnet-sdk-2.1.4
+        state: present
+
+    # Non-Idempotent Task.
+    - name: Runs apt-get update, if last run more than one hour ago.
+      apt: 
+        update_cache: yes
+        cache_valid_time: 3600</code>
+                    </pre>
+                <p>Notice that not all commands are Idempotent.</p>
+                <aside class="notes">
+                    Ansible Playbooks are not only Idempotent, but also a sequence of commands.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Example Ansible Playbook Run</h3>
+                <pre class="bash">
+                    <code style="max-height:100%" data-trim data-noescape>$ ansible-playbook -s dotnet-playbook.yml
+PLAY [all] *************************************************************************************************************************************************************************
+TASK [Gathering Facts] *************************************************************************************************************************************************************
+ok: [ansiblevm1]
+
+TASK [Is Microsoft.gpg there?] *****************************************************************************************************************************************************
+ok: [ansiblevm1]
+
+TASK [Download Microsoft GPG] ******************************************************************************************************************************************************
+skipping: [ansiblevm1]
+
+TASK [Microsoft Packages is in source list.] ***************************************************************************************************************************************
+ok: [ansiblevm1]
+
+TASK [Runs apt-get update, if last run more than one hour ago.] ********************************************************************************************************************
+ok: [ansiblevm1]
+
+TASK [dotnet-sdk-2.1.4 is present.] ************************************************************************************************************************************************
+ok: [ansiblevm1]
+
+PLAY RECAP *************************************************************************************************************************************************************************
+ansiblevm1                 : ok=5    changed=0    unreachable=0    failed=0</code>
+                </pre>
+                <aside class="notes">
+                    This playbook was run with just one Server.
+                    <br/> These are the steps to install .NET Core on Ubuntu 16.04.
+                </aside>
+            </section>
+
+            <section>
+                <h3>.NET Core Ubuntu Install playbook</h3>
+                <pre class="yaml">
+                    <code style="max-height:100%" data-trim data-noescape>---
+- hosts: ansiblevm1
+  tasks:
+  - name: Is Microsoft.gpg there?
+    stat: 
+      path: /etc/apt/trusted.gpg.d/microsoft.gpg
+    register: microsoft_gpg
+  - name: Download Microsoft GPG
+    command: bash -c "curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg"
+    when: microsoft_gpg.stat.exists == False        
+  - name: Microsoft Packages is in source list.
+    lineinfile:
+      path: /etc/apt/sources.list.d/dotnetdev.list
+      line: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod xenial main"
+      state: present
+      create: yes
+  - name: Runs apt-get update, if last run more than one hour ago.
+    apt: 
+      update_cache: yes
+      cache_valid_time: 3600
+  - name: dotnet-sdk-2.1.4 is present.
+    apt:
+      name: dotnet-sdk-2.1.4
+      state: present</code>
+                </pre>
+                <aside class="notes">
+                    There's a lot going on here. I removed whitespace so it fits on the screen.
+                    <br/> Notice the bash commands.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Infrastructure As declarative Code</h3>
+                <p>Ansible code can be declarative, but it can also be imperative when needed.</p>
+                <p>And there is an Ansible Module for almost anything you want.</p>
+                <img data-src="assets/unlimitedpower.gif" height="405" width="720">
+                <aside class="notes">
+                    In the end, this is still code.
+                </aside>
+            </section>
+
+            <!-- BEGIN SERVER PROVISIONING -->
+
+            <section data-background="#eAeAeA">
+                <h1>Server Provisioning</h1>
+                <p>Server setup documentation is how to create the server from scratch including all installed programs, security
+                    settings, configuration, etc.</p>
+                <aside class="notes">
+                    So far I've shown how to use Ansible to setup applications.
+                </aside>
+            </section>
+
+            <section>
+                <p>So far, I've shown how to install programs with Ansible.
+                    <br/> Checking dotnet version with ad-hoc commands shows this:
+                </p>
+                <pre class="bash">
+                    <code style="max-height:100%" data-trim data-noescape>$ ansible all -m shell -a "dotnet --version"
+ansiblevm1 | SUCCESS | rc=0 >>
+2.1.4
+
+ansiblevm3 | SUCCESS | rc=0 >>
+2.1.4
+
+ansiblevm2 | SUCCESS | rc=0 >>
+2.1.4</code>
+                </pre>
+                <p>Ad-hoc commands are useful for gathering information on existing servers.
+                </p>
+                <aside class="notes">
+                    This is half the battle. Installing programs, updating programs, and taking inventory of installed programs is a lot of work
+                    and time.
+                    <br/> So what comes next after installing software?
+                </aside>
+            </section>
+
+            <!-- BEGIN SERVER CONFIGURATION -->
+
+            <section data-background="#eAeAeA">
+                <h1>Server Configuration</h1>
+                <p>Environment configuration documentation is how the server should be setup for each environment:
+                    <br/> development, test, user-acceptance-testing, production, etc.</p>
+                <aside class="notes">
+                    So far I've shown how to use Ansible to setup applications.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Variables</h2>
+                <p>Variables can come from:</p>
+                <ul>
+                    <li>Inventory</li>
+                    <li>Playbooks</li>
+                    <li>Included Files</li>
+                    <li>Discovered system facts, such as hostname.</li>
+                </ul>
+                <br/>
+                <p>System Variables are implicit. User-defined variables must be explicitly defined.</p>
+                <aside class="notes">
+                    Configuration is made up by composing variables.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Variables in template commands</h2>
+                <p>Putting a line in a file with a template</p>
+                <pre class="bash">
+                    <code style="max-height:100%" data-trim data-noescape>$ ansible all -m lineinfile -a "path=~/test.txt state=present create=true line=\"{{ inventory_hostname }} is the 
+name of this server in the inventory file\""
+ansiblevm3 | SUCCESS => {
+    "backup": "",
+    "changed": true,
+    "msg": "line added"
+}
+...</code>
+                </pre>
+                <p>Reading the line from that file</p>
+                <pre class="bash">
+                        <code style="max-height:100%" data-trim data-noescape>$ ansible all -m shell -a "cat ~/test.txt"
+ansiblevm1 | SUCCESS | rc=0 >>
+ansiblevm1 is the name of this server in the inventory file
+
+ansiblevm2 | SUCCESS | rc=0 >>
+ansiblevm2 is the name of this server in the inventory file
+...</code>
+                </pre>
+                <aside class="notes">
+                    Ansible uses the Python templating library "Jinja" to template files and strings.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Setting Variables</h2>
+                <p>Variables such as a database connection string may be placed with these modules and more:</p>
+                <ul>
+                    <li>LineInFile - Ensures a line matching a regex pattern exists in a given file.</li>
+                    <li>Template - Templates a file, and places it on the remote server.</li>
+                    <li>ini_file - Sets INI settings</li>
+                </ul>
+                <aside class="notes">
+                    Environment configuration is a mix of lines in files, templated files, and absence of files in other places.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Environments</h2>
+                <p>So far you've seen "all" or the "ansiblevm1" virtual machine name used to identify servers in ad-hoc commands
+                    and playbooks.</p>
+                <p>Inventory can also be grouped for conenvience.</p>
+                <pre class="ini">
+                        <code data-trim data-noescape>[DBServer]
+ansiblevm1   ansible_ssh_user=daniel   ansible_host=ansiblevm1.eastus.cloudapp.azure.com
+[WebServers]
+ansiblevm2   ansible_ssh_user=daniel   ansible_host=ansiblevm2.eastus.cloudapp.azure.com
+ansiblevm3   ansible_ssh_user=daniel   ansible_host=ansiblevm3.eastus.cloudapp.azure.com</code>
+                </pre>
+                <p>Environments can be groups in inventory.
+                    <br/> Or, make separate inventory files for each environment.</p>
+                <pre class="ini">
+                        <code data-trim data-noescape>ansible WebServers -m ping</code>
+                </pre>
+                <aside class="notes">
+                    Your choice on how to separate Environments: separate files or groups.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Sensitive Variables</h2>
+                <p>Configuration variables usually hold sensitive information: passwords, keys.
+                    <br/> Ansible-Vault can help protect variables in source control.
+                </p>
+                <img data-src="assets/ansiblevault.gif" height="948" width="1649">
+                <aside class="notes">
+                    The recording there is a little small. What's happening here is that a YAML file is being encrypted.
+                </aside>
+            </section>
+
+            <section>
+                <h2>Variables Summary</h2>
+                <p>Variables are the basis for configuration and can be grouped by many ways, and come from many sources.</p>
+                <br/>
+                <p>How variables are organized can be flexible, and will depend upon your organization.</p>
+                <aside class="notes">
+                    All the ways to configure variables in Ansible is a complex topic and varies based upon your use.
+                </aside>
+            </section>
+
+            <!-- BEGIN ANSIBLE MISC -->
+
+            <section>
+                <h3>Other Ansible</h3>
+                <ul>
+                    <li>Ansible Galaxy - A galaxy of premade Ansible tasks ready to go.</li>
+                    <li>Ansible Container - Build containers with Ansible.</li>
+                    <li>Cloud - Also make servers in Azure and AWS.</li>
+                    <li>And many more use-cases.</li>
+                </ul>
+                <aside class="notes">
+                    Ansible can be used for many purposes besides Configuration and Provisioning.
+                </aside>
+            </section>
+
+            <!-- BEGIN WHEN -->
+
+            <section data-background="#eAeAeA">
+                <h2>When does Ansible make sense?</h2>
+                <aside class="notes">
+                    When Ansible makes sense is different from when Infrastructure as Code makes sense.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Ansible makes sense Because</h3>
+                <ul>
+                    <li>Agentless - No central server by default. Run Ansible from your laptop if you want.</li>
+                    <li>Nothing to install on servers. SSH and Python is it, and most Linux distributions have that.</li>
+                    <li>Minimal effort to get started.</li>
+                    <li>Ansible can be gradually implemented.</li>
+                    <li>Free</li>
+                </ul>
+                <aside class="notes">
+                    Most Linux distributions have some version of acceptable Linux.
+                    <br/> Possible to do hybrid approach of partially managed by Ansible.
+                </aside>
+            </section>
+
+            <section>
+                <h3>Ansible doesn't make sense Because</h3>
+                <ul>
+                    <li>Agentless - No central server by default. A separate product Ansible-Tower provides central management.</li>
+                    <li>You like 5000 line shell scripts</li>
+                    <li>You like a different tool better</li>
+                </ul>
+                <aside class="notes">
+                    It's all down to personal preference.
+                </aside>
+            </section>
+
+
+            <!-- BEGIN WHEN -->
+
+            <section data-background="#eAeAeA">
+                <h2>Why Infrastructure as Code?</h2>
+                <div class="fragment fade-in">
+                    <p>Let's make our lives easier.</p>
+                    <img data-src="assets/tooeasy.gif" height="500" width="718">
+                </div>
+                <aside class="notes">
+                    We make all sorts of things harder than they need to be. But we can make servers easy-ish. So why not?
+                </aside>
+            </section>
+
+
+
+            <section data-background="#F2F2F2">
+                <img data-src="assets/placeholderslide.jpg" height="1080" width="1920">
+            </section>
+        </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+        // More info about config & dependencies:
+        // - https://github.com/hakimel/reveal.js#configuration
+        // - https://github.com/hakimel/reveal.js#dependencies
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 4.0,
+            dependencies: [
+                { src: 'plugin/markdown/marked.js' },
+                { src: 'plugin/markdown/markdown.js' },
+                { src: 'plugin/notes/notes.js', async: true },
+                { src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } }
+            ]
+        });
+        Reveal.configure({
+            showSlideNumber: 'speaker',
+            slideNumber: true,
+            slideNumber: 'c/t'
+        });
+    </script>
+</body>
+
+</html>

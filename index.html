@@ -130,39 +130,61 @@
                 <p>Testing this code was a very manual, tedious, and inprecise process.
                     <br /> I haven't listed the other 20,000 lines in this one file.</p>
                 <img data-src="assets/winforms_testing.gif" height="548" width="960">
+                <p> Did I mention there are hundreds of forms?</p>
                 <aside class="notes">
                 </aside>
             </section>
 
 
-            <!-- BEGIN CYCLOMATIC -->
+            <!-- BEGIN Dependency inversion -->
 
             <section data-background="#eAeAeA">
-                The code was too complicated and no separation of concerns made unit tests near impossible.
+                <p>The code was too complicated and no separation of concerns made unit tests near impossible.</p>
                 <aside class="notes">
+                    One test at a time is always the best place to start, but we were given no time, and none of us had
+                    ever done it before.
                 </aside>
             </section>
 
             <section>
                 <h2>Dependency Inversion Principle</h2>
-                <br/>
+                <br />
 
                 <p>High-level modules should not depend on low-level modules. Both should depend on abstractions.
-                    <br/>
-                    <br/> Abstractions should not depend on details. Details should depend on abstractions.
+                    <br />
+                    <br /> Abstractions should not depend on details. Details should depend on abstractions.
                 </p>
-
                 <aside class="notes">
+                    Might be a good time to remind y'all where I'm going with this.
+                    <br /> And it's not ASP.NET Core specific!
+                </aside>
+            </section>
+
+            <section>
+                <p>Now might be a good time to spoil the ending.
+                    <br /> Dependency injection by adding ASP.NET Core Services.</p>
+                <pre class="csharp"><code style="max-height:100%" data-trim data-noescape>    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        services.AddSingleton&lt;ICacheResults, InMemoryCache&gt;();
+    }</code></pre>
+                <p>ICacheResults being the interface, InMemoryCache being the concrete implementation</p>
+                <aside class="notes">
+                    But I'm going to leave this behind and come back to it.
                 </aside>
             </section>
 
 
-
+            <!-- BEGIN Story part 2 -->
 
             <section>
+                <p>One day I walked into work after a late night deployment...</p>
                 <img data-src="assets/flame-war.gif" height="692" width="680">
 
                 <aside class="notes">
+                    Sounds like the beginning of a joke where "the software developer walked into a bar".
+                    <br/>Anyway, stuff was broke.
                 </aside>
             </section>
 

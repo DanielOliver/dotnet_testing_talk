@@ -140,6 +140,11 @@
 
             <section data-background="#eAeAeA">
                 <p>The code was too complicated and no separation of concerns made unit tests near impossible.</p>
+                <ul>
+                    <li>The "Business logic" shouldn't be completely dependent on the GUI.</li>
+                    <li>The "Business logic" should probably be a little clearer on how and why it's calling the
+                        database.</li>
+                </ul>
                 <aside class="notes">
                     One test at a time is always the best place to start, but we were given no time, and none of us had
                     ever done it before.
@@ -162,6 +167,7 @@
 
             <section>
                 <p>Now might be a good time to spoil the ending to the concepts here.
+                    <br />
                     <br /> Dependency injection by adding ASP.NET Core Services.</p>
                 <pre class="csharp"><code style="max-height:100%" data-trim data-noescape>    // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -169,22 +175,63 @@
         services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         services.AddSingleton&lt;ICacheResults, InMemoryCache&gt;();
     }</code></pre>
-                <p>ICacheResults being the interface, InMemoryCache being the concrete implementation</p>
                 <aside class="notes">
-                    But I'm going to leave this behind and come back to it.
+                    This is in the Startup.cs class, which comes with every ASP.NET Core class
                 </aside>
             </section>
-
 
             <!-- BEGIN Story part 2 -->
 
             <section>
-                <p>One day I walked into work after a late night deployment...</p>
+                <p>One day I walked into work after a late night deployment of a major software update...</p>
                 <img data-src="assets/flame-war.gif" height="692" width="680">
 
                 <aside class="notes">
                     Sounds like the beginning of a joke where "the software developer walked into a bar".
-                    <br/>Anyway, stuff was broke.
+                    <br />Anyway, stuff was broke.
+                </aside>
+            </section>
+
+            <section>
+                <p>A LOT of work had been done in this file, and we knew something was breaking in this 3000 line
+                    button click based on pictures from the client.</p>
+                <pre class="visualbasic"><code style="max-height:100%" data-trim data-noescape>    Private Sub btnOrderCreate_Click(sender As object, e As EventArgs) Handles btnOrderCreate.Click
+            ...
+    
+            If ExecuteSQLInt("SELECT FeatureFlag1 FROM AR_MASTER WHERE AR_ACCT_ID = " + txtBoxAcct1.Text) = 1
+                And ExecuteSql("UPDATE HR_User Set LastAction = GETDATE() WHERE User_ID = " + txtBoxRep.Text)
+                And ExecuteSqlString("SELECT PIN FROM HR_USER WHERE User_ID = " + txtBoxRepId.Text) = inputRepPass.Value 
+                Then
+                ...
+                ' Create Order
+            ElseIf something or other Then
+                ...
+            Else
+                ...                
+            End If
+            ...
+        End Sub</code></pre>
+                <aside class="notes">
+                    We couldn't get access to the client's environment.
+                </aside>
+            </section>
+
+            <section>
+                <p>When a client can't take orders, that's the most important problem.</p>
+                <ul>
+                    <li>The client gets angry.</li>
+                    <li>Your employer looks bad.</li>
+                    <li>You better be confident in any proposed fix you bring
+                        <br /> to your boss, for them to bring to the client.</li>
+                    <li>How can you even diagnose the problem with no information on their setup?</li>
+                </ul>
+                <aside class="notes">
+                </aside>
+            </section>
+
+
+            <section>
+                <aside class="notes">
                 </aside>
             </section>
 

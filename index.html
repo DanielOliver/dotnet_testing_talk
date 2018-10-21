@@ -252,19 +252,85 @@
             </section>
 
             <section>
-                <p>The same skills you use to debug software, is the same skills you use to refactor code to write tests for the code.</p>
+                <p>The same skills you use to debug software, is the same skills you use to refactor code to write
+                    tests for the code.</p>
                 <img data-src="assets/insane_macho.gif" height="600" width="804">
 
                 <aside class="notes">
                     Understanding code usually follows the same methods of reading and breaking down code.
-                    <br/> What changes, is what you do with that understanding, whether you write tests or just debug the problem and let the code continue to be a problem.
+                    <br /> What changes, is what you do with that understanding, whether you write tests or just debug
+                    the problem and let the code continue to be a problem.
 
                 </aside>
             </section>
 
             <!-- BEGIN DEBUGGING CLAIMS -->
 
+            <section data-background="#eAeAeA">
+                <p>Enough of my problems for a bit, here's the software I want to write tests for.</p>
+                <img data-src="assets/meetup_api.png" height="525" width="1113">
+                <br />
+                <img data-src="assets/meetup_api2.png" height="280" width="1113">
+                <aside class="notes">
+                    The first window displays past events for a meetup.
+                    <br />The second window displays up to the most recent 10 meetup event searches.
+                </aside>
+            </section>
 
+            <section>
+                <img data-src="assets/meetup_api2.png" height="280" width="1113">
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>     // GET api/meetup
+        [HttpGet()]
+        public IEnumerable&lt;string&gt; Get()
+        {
+            return this.searchRankings.GetRecentSearchResults();
+        }</code></pre>
+                <aside class="notes">
+                    This second window is great. It's a joy to test, it's so simple.
+                </aside>
+            </section>
+
+            <section>
+                <img data-src="assets/meetup_api.png" height="350" width="742">
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>// GET api/meetup/knox-net
+[HttpGet("{name}")]
+public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
+{
+    if(string.IsNullOrWhiteSpace(name)) {
+        return new string[0];
+    }
+
+    this.searchRankings.AddRecentSearch(name);
+    HttpResponseMessage response = await httpClient.GetAsync($"{name}/events?key={this.meetupApiKey}&status=past");
+    var events = await response.Content.ReadAsAsync&lt;List&lt;MeetupEvent&gt;&gt;();
+    return events.Select(x => x.name);
+}</code></pre>
+                <aside class="notes">
+                    This second window is great. It's a joy to test, it's so simple.
+                </aside>
+            </section>
+
+            <section>
+                <h3>API Controller constructor</h3>
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>    private readonly string meetupApiKey;
+    private readonly HttpClient httpClient;
+    private readonly ICacheResults searchRankings;
+
+    public MeetupController(IConfiguration configuration, ICacheResults searchRankings)
+    {
+        meetupApiKey = configuration.GetValue&lt;string&gt;("MEETUP_API_KEY");
+        httpClient = new HttpClient() {
+            BaseAddress = new Uri("https://api.meetup.com/")
+        };
+        httpClient.DefaultRequestHeaders.Accept.Clear();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        this.searchRankings = searchRankings;
+    }</code></pre>
+                <p>https://dev.azure.com/knoxdevops/knoxdevops</p>
+                <aside class="notes">
+                    Honestly, this isn't the worst constructor. It's still very manageable.
+                </aside>
+            </section>
 
             <!-- BEGIN OUTRO -->
 

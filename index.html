@@ -188,7 +188,7 @@
 
                 <aside class="notes">
                     Sounds like the beginning of a joke where "the software developer walked into a bar".
-                    <br />Anyway, stuff was broke.
+                    <br />Anyway, stuff was broke. And it was probably my code that broke it.
                 </aside>
             </section>
 
@@ -332,7 +332,7 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
                 </aside>
             </section>
 
-            <!-- BEGIN OUTRO -->
+            <!-- BEGIN Refactor -->
 
             <section data-background="#eAeAeA">
                 <p>The problems with testing this code.</p>
@@ -342,12 +342,60 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
                     <li>This API is Meetup Production, what if I'm making changes to events with a PUT or POST?</li>
                     <li>This code could be copy-pasted to elsewhere.</li>
                 </ul>
-                <br/>
-                <p>Note: I'm ignoring the argument whether API controllers should be tested, this depends on company and team.</p>
+                <br />
+                <p>Note: I'm ignoring the argument whether API controllers should be tested, this depends on company
+                    and team.</p>
                 <aside class="notes">
 
                 </aside>
             </section>
+
+            <!-- BEGIN My Life -->
+
+            <section>
+                <p>To get back to my life, it's getting close to noon.
+                    <br />And the store running this Point-Of-Sale interface couldn't take orders.</p>
+                <img data-src="assets/this_is_fine.gif" height="540" width="960">
+
+                <aside class="notes">
+                    I couldn't find the problem.
+                </aside>
+            </section>
+
+            <section data-background="#eAeAeA">
+                <p>My problems from back then are mildly relevant because I was</p>
+                <ul>
+                    <li>Figuring out what code is important/relevant enough to need testing.</li>
+                    <li>Mocking external dependencies to mimic behavior.</li>
+                    <li>Changing code as little possible.</li>
+                </ul>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <p>Mock objects are simulated objects that mimic the behavior of real objects in controlled ways.
+                    <br /> (wikipedia definition)
+                    <br />
+                    <br /> To simulate objects, we need to know what behavior they have.
+                </p>
+                <aside class="notes">
+                    So what behavior does the Meetup API have?
+                </aside>
+            </section>
+
+            <section>
+                <h3>Meetup API Behavior</h3>
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>    public interface IMeetupApi
+    {
+        Task&lt;IEnumerable&lt;string&gt;&gt; GetPastEventNames(string meetupName);
+    }</code></pre>
+                <aside class="notes">
+                    Surpise, the new meetup interface couldn't give a fig whether
+                    <br /> it's using HttpClient or not.
+                </aside>
+            </section>
+
 
             <!-- BEGIN OUTRO -->
 

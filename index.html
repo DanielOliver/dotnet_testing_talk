@@ -63,10 +63,108 @@
 
             <section data-background="#F2F2F2">
                 <h2>Testing</h2>
-                <h3>with</h3>                    
+                <h3>with</h3>
                 <h2>ASP.NET Core</h2>
             </section>
 
+            <!-- BEGIN PROBLEM -->
+
+            <section data-background="#eAeAeA">
+
+                <p>Why should we test code?</p>
+                <p>Why should we write testable code?</p>
+
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <p>So we don't end up with 1600 line Winform button clicks.</p>
+                <img data-src="assets/20181021_codewinforms.png" height="118" width="1270">
+                <p>It happens all the time.</p>
+
+                <aside class="notes">
+                    This really happens. And I promise you, 1600 lines is not uncommon.
+                </aside>
+            </section>
+
+
+            <section>
+                <p>Office layout for software department at my first job out of college.</p>
+                <img data-src="assets/20181021_officelayout.png" height="972" width="1728">
+
+                <aside class="notes">
+                    But first, a story. About my first software job.
+                    <br /> I sat in a cubicle and wrote code all day, and I didn't talk to anyone around me, because
+                    that would decrease productivity.
+                    <br /> And I wore khakis, a dress shirt, and sometimes a tie.
+                </aside>
+            </section>
+
+            <section>
+                <p>This was typical.</p>
+                <pre class="visualbasic"><code style="max-height:100%" data-trim data-noescape>    Private Sub btnOrderCreate_Click(sender As object, e As EventArgs) Handles btnOrderCreate.Click
+        ...
+
+        If ExecuteSQLInt("SELECT FeatureFlag1 FROM AR_MASTER WHERE AR_ACCT_ID = " + txtBoxAcct1.Text) = 1
+            And ExecuteSql("UPDATE HR_User Set LastAction = GETDATE() WHERE User_ID = " + txtBoxRep.Text)
+            And ExecuteSqlString("SELECT PIN FROM HR_USER WHERE User_ID = " + txtBoxRepId.Text) = inputRepPass.Value 
+            Then
+            ...
+            ' Create Order
+        ElseIf something or other Then
+            ...
+        Else
+            ...                
+        End If
+        ...
+    End Sub</code></pre>
+                <p>This happened over 12 years.</p>
+                <aside class="notes">
+                    This code is paraphrasing, and is meant to illustrate the intent and reality.
+                    <br /> And the reality is a giant winforms application.
+                </aside>
+            </section>
+
+            <section>
+                <p>Testing this code was a very manual, tedious, and inprecise process.
+                    <br /> I haven't listed the other 20,000 lines in this one file.</p>
+                <img data-src="assets/winforms_testing.gif" height="548" width="960">
+                <aside class="notes">
+                </aside>
+            </section>
+
+
+            <!-- BEGIN CYCLOMATIC -->
+
+            <section data-background="#eAeAeA">
+                The code was too complicated and no separation of concerns made unit tests near impossible.
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <h2>Dependency Inversion Principle</h2>
+                <br/>
+
+                <p>High-level modules should not depend on low-level modules. Both should depend on abstractions.
+                    <br/>
+                    <br/> Abstractions should not depend on details. Details should depend on abstractions.
+                </p>
+
+                <aside class="notes">
+                </aside>
+            </section>
+
+
+
+
+            <section>
+                <img data-src="assets/flame-war.gif" height="692" width="680">
+
+                <aside class="notes">
+                </aside>
+            </section>
 
             <!-- BEGIN OUTRO -->
 

@@ -334,6 +334,23 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
 
             <!-- BEGIN OUTRO -->
 
+            <section data-background="#eAeAeA">
+                <p>The problems with testing this code.</p>
+                <ul>
+                    <li>Any tests directly call the Meetup API.</li>
+                    <li>The data returned from the API changes over time.</li>
+                    <li>This API is Meetup Production, what if I'm making changes to events with a PUT or POST?</li>
+                    <li>This code could be copy-pasted to elsewhere.</li>
+                </ul>
+                <br/>
+                <p>Note: I'm ignoring the argument whether API controllers should be tested, this depends on company and team.</p>
+                <aside class="notes">
+
+                </aside>
+            </section>
+
+            <!-- BEGIN OUTRO -->
+
             <section data-background="#333333">
                 <h1>Daniel Oliver</h1>
                 <p>Microsoft MVP</p>

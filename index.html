@@ -108,14 +108,14 @@
 
         If ExecuteSQLInt("SELECT FeatureFlag1 FROM AR_MASTER WHERE AR_ACCT_ID = " + txtBoxAcct1.Text) = 1
             And ExecuteSql("UPDATE HR_User Set LastAction = GETDATE() WHERE User_ID = " + txtBoxRep.Text)
-            And ExecuteSqlString("SELECT PIN FROM HR_USER WHERE User_ID = " + txtBoxRepId.Text) = inputRepPass.Value 
+            And ExecuteSqlString("SELECT PIN FROM HR_USER WHERE User_ID = " + txtBoxRepId.Text) = inputRepPass.Value
             Then
             ...
             ' Create Order
         ElseIf something or other Then
             ...
         Else
-            ...                
+            ...
         End If
         ...
     End Sub</code></pre>
@@ -197,17 +197,17 @@
                     button click based on pictures from the client.</p>
                 <pre class="visualbasic"><code style="max-height:100%" data-trim data-noescape>    Private Sub btnOrderCreate_Click(sender As object, e As EventArgs) Handles btnOrderCreate.Click
             ...
-    
+
             If ExecuteSQLInt("SELECT FeatureFlag1 FROM AR_MASTER WHERE AR_ACCT_ID = " + txtBoxAcct1.Text) = 1
                 And ExecuteSql("UPDATE HR_User Set LastAction = GETDATE() WHERE User_ID = " + txtBoxRep.Text)
-                And ExecuteSqlString("SELECT PIN FROM HR_USER WHERE User_ID = " + txtBoxRepId.Text) = inputRepPass.Value 
+                And ExecuteSqlString("SELECT PIN FROM HR_USER WHERE User_ID = " + txtBoxRepId.Text) = inputRepPass.Value
                 Then
                 ...
                 ' Create Order
             ElseIf something or other Then
                 ...
             Else
-                ...                
+                ...
             End If
             ...
         End Sub</code></pre>
@@ -245,8 +245,26 @@
                     <li>Can I isolate and dismiss chunks of code?</li>
                 </ul>
                 <aside class="notes">
+                    All the time I hear software developers boast about their debugging skills, how they can take some
+                    code, break it down, and find what's wrong.
+                    <br /> I even see it on job listings that strong debugging skills are desired.
                 </aside>
-            </section>            
+            </section>
+
+            <section>
+                <p>The same skills you use to debug software, is the same skills you use to refactor code to write tests for the code.</p>
+                <img data-src="assets/insane_macho.gif" height="600" width="804">
+
+                <aside class="notes">
+                    Understanding code usually follows the same methods of reading and breaking down code.
+                    <br/> What changes, is what you do with that understanding, whether you write tests or just debug the problem and let the code continue to be a problem.
+
+                </aside>
+            </section>
+
+            <!-- BEGIN DEBUGGING CLAIMS -->
+
+
 
             <!-- BEGIN OUTRO -->
 

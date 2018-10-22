@@ -232,7 +232,8 @@
             <section>
                 <p>How can I find the problem?
                     <br />
-                    <br />I suppose that I need to run the code by stepping through the code and debugging it and guessing.
+                    <br />I suppose that I need to run the code by stepping through the code and debugging it and
+                    guessing.
                 </p>
                 <aside class="notes">
                 </aside>
@@ -306,7 +307,8 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
     return events.Select(x => x.name);
 }</code></pre>
                 <aside class="notes">
-                    I'm not a fan of this. It's not a lot of code, but it depends on actually calling an external service.
+                    I'm not a fan of this. It's not a lot of code, but it depends on actually calling an external
+                    service.
                 </aside>
             </section>
 
@@ -376,8 +378,9 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
             </section>
 
             <section>
-                <p>To test the "business logic", I need to make sure the Production Meetup API doesn't influence my tests.
-                    <br/>
+                <p>To test the "business logic", I need to make sure the Production Meetup API doesn't influence my
+                    tests.
+                    <br />
                     Mock objects are simulated objects that mimic the behavior of real objects in controlled ways.
                     <br /> (wikipedia definition)
                     <br />
@@ -508,7 +511,8 @@ public async Task TestMeetupApi()
             </section>
 
             <section>
-                <p>The implementation of the MeetupApi doesn't even matter, it shouldn't be different code than it was before. It's just in a different place.</p>
+                <p>The implementation of the MeetupApi doesn't even matter, it shouldn't be different code than it was
+                    before. It's just in a different place.</p>
                 <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>public class MeetupApiClient: IMeetupApi
 {
     private readonly string meetupApiKey;
@@ -539,7 +543,7 @@ public async Task TestMeetupApi()
 
             <section>
                 <p>Be sure to add the new MeetupApi implementation to the Startup.cs class.</p>
-                <br/>
+                <br />
                 <pre class="csharp"><code style="max-height:100%" data-trim data-noescape>    // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -558,8 +562,67 @@ public async Task TestMeetupApi()
                 </aside>
             </section>
 
+            <!-- BEGIN Final story -->
+
+            <section data-background="#eAeAeA">
+                <h3>My boring story</h3>
+                <p>Sometime later in the day, we got more logs that said something about a "SQLException".
+                    <br />
+                    <br />This was very unusual and extremely bad for me, because we software developers were very much
+                    *required* to test all our prepared inline SQL
+                    statements by hand.
+                </p>
+                <aside class="notes">
+                    About this time, I'm ready to pack my bags for fear I was about to be fired.
+                </aside>
+            </section>
+
+            <section>
+                <p>We start going SQL statement by SQL query throughout the entire 3000 lines of code.
+                    <br />
+                    <br />About halfway through, my boss sees something he gets suspicious about.
+                    <br />
+                    <br />He tells me to test this statement. I step through the code to that statement, and it passes.
+                    <br />
+                    <br />He walks away.
+                </p>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <p>Five minutes later, he comes to me and tells me that this statement is only valid on SQL Server 2008
+                    and above, which is what our in-house test environment was running.
+                    <br />
+                    <br />The client was running SQL Server 2005</p>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <p>A unit test wouldn't have caught this, but the lack of tests didn't rule out the other 2600 lines
+                    that weren't SQL.</p>
+                <img data-src="assets/tragedy.gif" height="416" width="960">
+                <aside class="notes">
+                    How ironic, if I had written tests, the tests wouldn't have caught it, but it might have shown me
+                    where not to look.
+                </aside>
+            </section>
 
             <!-- BEGIN OUTRO -->
+
+            <section data-background="#eAeAeA">
+                <h2>Is it testing or debugging?</h2>
+                <ol>
+                    <li>Find the external dependency.</li>
+                    <li>Isolate the external dependency.</li>
+                    <li>Hide the external dependency via an interface.</li>
+                    <li>Implement the interface, both for testing and actual usage.</li>
+                    <li>Make it easier to find bug in external dependencies by testing everything else.</li>
+                </ol>
+                <aside class="notes">
+                </aside>
+            </section>
 
             <section data-background="#333333">
                 <h1>Daniel Oliver</h1>

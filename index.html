@@ -368,6 +368,7 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
                     <li>Figuring out what code is important/relevant enough to need testing.</li>
                     <li>Mocking external dependencies to mimic behavior.</li>
                     <li>Changing code as little possible.</li>
+                    <li>Hopefully not changing behavior.</li>
                 </ul>
                 <aside class="notes">
                 </aside>
@@ -396,6 +397,97 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
                 </aside>
             </section>
 
+            <section>
+                <h2>THE ENTIRE POINT</h2>
+                <br />
+                <p><b>Identifying, isolating, and mocking external dependencies is the single most important thing to
+                        writing unit tests. </b></p>
+
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <!-- BEGIN Refactor TWO -->
+
+            <section>
+                <h3>API Controller constructor</h3>
+                <p>Instead of creating HttpClient, I use an injected IMeetupApi.</p>
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>    private readonly IMeetupApi meetupApi;
+    private readonly ICacheResults searchRankings;
+
+    public BetterMeetupController(IMeetupApi meetupApi, ICacheResults searchRankings)
+    {
+        this.meetupApi = meetupApi;
+        this.searchRankings = searchRankings;
+    }</code></pre>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <img data-src="assets/meetup_api.png" height="350" width="742">
+                <p>Now the controller doesn't care about HttpClient.</p>
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>// GET api/meetup/knox-net
+    [HttpGet("{name}")]
+    public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
+    {
+        if(string.IsNullOrWhiteSpace(name)) {
+            return new string[0];
+        }
+        this.searchRankings.AddRecentSearch(name);
+        return await this.meetupApi.GetPastEventNames(name);
+    }</code></pre>
+                <aside class="notes">
+                    Tada, now I can simulate MeetupApi
+                </aside>
+            </section>
+
+            <section>
+                <p>I can create a dummy API that given an expected value, returns expected results.
+                    <br />
+                    <br /> <b>The point isn't to test the API, it's to test the code that calls the API.</b>
+                </p>
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>private class DummyApiClient: IMeetupApi
+{
+    public Task&lt;IEnumerable&lt;string&gt;&gt; GetPastEventNames(string meetupName)
+    {
+        Assert.Equal("knox-net", meetupName);
+        var results = new[]
+        {
+            "Event1",
+            "Event2"
+        };
+        return Task.FromResult((IEnumerable&lt;string&gt;)results);
+    }
+}</code></pre>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <p>Now I can write a test for the Meetup Controller using the DummyApiClient.</p>
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>[Fact]
+public async Task TestMeetupApi()
+{
+    var inMemoryCache = new InMemoryCache();
+    var meetupController = 
+        new BetterMeetupController(
+            new DummyApiClient(),
+            inMemoryCache
+            );
+    Assert.Empty(inMemoryCache.GetRecentSearchResults());
+    var events = await meetupController.Get("knox-net");
+    Assert.Equal(new[]
+    {
+        "Event1",
+        "Event2"
+    }, events);
+    Assert.NotEmpty(inMemoryCache.GetRecentSearchResults());
+}</code></pre>
+                <aside class="notes">
+                    Notice something?  I'm not even really concerned much with how the API is interacted with, as much as how it fits in the world.
+                </aside>
+            </section>
 
             <!-- BEGIN OUTRO -->
 

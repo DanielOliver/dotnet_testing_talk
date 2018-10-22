@@ -232,7 +232,7 @@
             <section>
                 <p>How can I find the problem?
                     <br />
-                    <br />I need to run the code by stepping through the code and debugging it and guessing.
+                    <br />I suppose that I need to run the code by stepping through the code and debugging it and guessing.
                 </p>
                 <aside class="notes">
                 </aside>
@@ -267,7 +267,7 @@
             <!-- BEGIN DEBUGGING CLAIMS -->
 
             <section data-background="#eAeAeA">
-                <p>Enough of my problems for a bit, here's the software I want to write tests for.</p>
+                <p>Enough of my problems for a bit, here's the software I want to write tests for today.</p>
                 <img data-src="assets/meetup_api.png" height="525" width="1113">
                 <br />
                 <img data-src="assets/meetup_api2.png" height="280" width="1113">
@@ -306,7 +306,7 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
     return events.Select(x => x.name);
 }</code></pre>
                 <aside class="notes">
-                    This second window is great. It's a joy to test, it's so simple.
+                    I'm not a fan of this. It's not a lot of code, but it depends on actually calling an external service.
                 </aside>
             </section>
 
@@ -368,14 +368,17 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
                     <li>Figuring out what code is important/relevant enough to need testing.</li>
                     <li>Mocking external dependencies to mimic behavior.</li>
                     <li>Changing code as little possible.</li>
-                    <li>Hopefully not changing behavior.</li>
+                    <li><b>Hopefully not changing behavior.</b></li>
                 </ul>
                 <aside class="notes">
+                    Above all, not changing working behavior. Or at least, usually working behavior.
                 </aside>
             </section>
 
             <section>
-                <p>Mock objects are simulated objects that mimic the behavior of real objects in controlled ways.
+                <p>To test the "business logic", I need to make sure the Production Meetup API doesn't influence my tests.
+                    <br/>
+                    Mock objects are simulated objects that mimic the behavior of real objects in controlled ways.
                     <br /> (wikipedia definition)
                     <br />
                     <br /> To simulate objects, we need to know what behavior they have.
@@ -427,7 +430,7 @@ public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
             <section>
                 <img data-src="assets/meetup_api.png" height="350" width="742">
                 <p>Now the controller doesn't care about HttpClient.</p>
-                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>// GET api/meetup/knox-net
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>// GET api/BetterMeetup/knox-net
     [HttpGet("{name}")]
     public async Task&lt;IEnumerable&lt;string&gt;&gt; Get(string name)
     {
@@ -485,9 +488,76 @@ public async Task TestMeetupApi()
     Assert.NotEmpty(inMemoryCache.GetRecentSearchResults());
 }</code></pre>
                 <aside class="notes">
-                    Notice something?  I'm not even really concerned much with how the API is interacted with, as much as how it fits in the world.
+                    Notice something? I'm not even really concerned much with how the API is interacted with, as much
+                    as how it fits in the world.
                 </aside>
             </section>
+
+            <!-- BEGIN Process -->
+
+            <section data-background="#eAeAeA">
+                <h2>THE Business logic can be isolated</h2>
+                <ol>
+                    <li>Find the external dependency.</li>
+                    <li>Isolate the external dependency.</li>
+                    <li>Hide the external dependency via an interface.</li>
+                    <li>Implement the interface, both for testing and actual usage.</li>
+                </ol>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <p>The implementation of the MeetupApi doesn't even matter, it shouldn't be different code than it was before. It's just in a different place.</p>
+                <pre class="chsarp"><code style="max-height:100%" data-trim data-noescape>public class MeetupApiClient: IMeetupApi
+{
+    private readonly string meetupApiKey;
+    private readonly HttpClient httpClient;
+
+    public MeetupApiClient(HttpClient httpClient, IConfiguration configuration) 
+    {
+        this.meetupApiKey = configuration.GetValue&lt;string&gt;("MEETUP_API_KEY");
+        this.httpClient = httpClient;
+    }
+    public async Task&lt;IEnumerable&lt;string&gt;&gt; GetPastEventNames(string meetupName) 
+    {
+        HttpResponseMessage response = await httpClient.GetAsync($"{meetupName}/events?key={this.meetupApiKey}&status=past");
+        var events = await response.Content.ReadAsAsync&lt;List&lt;MeetupEvent&gt;&gt;();
+        return events.Select(x => x.name);
+    }
+}</code></pre>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <h2>DRY (Don't Repeat Yourself)</h2>
+                <p>If you notice, when I say "isolate", I could be saying Don't Repeat Yourself.</p>
+                <aside class="notes">
+                </aside>
+            </section>
+
+            <section>
+                <p>Be sure to add the new MeetupApi implementation to the Startup.cs class.</p>
+                <br/>
+                <pre class="csharp"><code style="max-height:100%" data-trim data-noescape>    // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSingleton&lt;ICacheResults, InMemoryCache&gt;();
+
+            services.AddHttpClient&lt;IMeetupApi, MeetupApiClient&gt;(client =>
+            {
+                client.BaseAddress = new Uri("https://api.meetup.com/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+        }</code></pre>
+                <aside class="notes">
+                    This is in the Startup.cs class, which comes with every ASP.NET Core class
+                </aside>
+            </section>
+
 
             <!-- BEGIN OUTRO -->
 
